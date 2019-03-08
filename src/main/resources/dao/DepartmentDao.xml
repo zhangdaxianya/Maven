@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--映射文件的地址需和接口同名-->
+<mapper namespace="net.dgsr.dao.DepartmentDao">
+
+    <!--根据公司部门信息-->
+    <select id="getDepartmentDao" resultMap="BaseResultMap" parameterType="int">
+        select * from dbo.department where parent_id=#{parentid}
+    </select>
+
+    <resultMap id="BaseResultMap" type="net.dgsr.model.Department">
+        <id property="id" javaType="int" column="id" jdbcType="BIGINT"/>
+        <result property="name" javaType="String" column="name" jdbcType="VARCHAR"/>
+        <result property="order" javaType="int" column="orderby" jdbcType="BIGINT" />
+        <result property="parentid" javaType="int" column="parent_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+    <!-- 1，创建控制器对象的注解配置扫描 -->
+    <context:component-scan base-package="net.dgsr.controller" />
+
+    <!-- 2，springMVC一键式配置 -->
+    <mvc:annotation-driven >
+        <mvc:message-converters>
+
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json ; charset=utf-8</value>
+                        <value>text/html ; charset=utf-8</value>
+                    </list>
+                </property>
+            </bean>
+
+            <!-- FastJsonHttpMessageConverter4 -->
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json ; charset=utf-8</value>
+                        <value>text/html ; charset=utf-8</value>
+                    </list>
+                </property>
+                <!-- JSON时间格式处理 -->
+                <property name="dateFormat" value="yyyy-MM-dd" />
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- 3，配置一个视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 前缀 -->
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <!-- 后缀 -->
+        <property name="suffix"  value=".jsp"/>
+    </bean>
+
+
+    <!-- 4，使用Spring提供的静态资源映射处理 -->
+    <mvc:default-servlet-handler />
+
+
+    <!--5， 配置上传请求的解析器   id为固定值  不能改变 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 限制文件上传的大小 -->
+        <property name="maxUploadSize" value="10485760"/>
+        <property name="defaultEncoding" value="utf-8" />
+    </bean>
+
+    <!--6， 配置拦截器 -->
+    <!--<mvc:interceptors>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**" />-->
+
+            <!--&lt;!&ndash; 不拦截的请求 &ndash;&gt;-->
+            <!--<mvc:exclude-mapping path="/"/>-->
+            <!--<mvc:exclude-mapping path="/login"/>-->
+            <!--<mvc:exclude-mapping path="/getLoginCode"/>-->
+            <!--<mvc:exclude-mapping path="/doLogin"/>-->
+            <!--<mvc:exclude-mapping path="/static/**"/>-->
+
+            <!--&lt;!&ndash;指定拦截器&ndash;&gt;-->
+            <!--<bean class="net.dgsr.interceptor.SysInterceptor" />-->
+
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
+
+
+</beans>
