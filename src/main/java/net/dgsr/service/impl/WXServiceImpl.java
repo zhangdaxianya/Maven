@@ -10,7 +10,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.org.mozilla.javascript.internal.json.JsonParser;
 
 import java.util.List;
 import java.util.Map;

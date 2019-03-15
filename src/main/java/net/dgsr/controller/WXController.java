@@ -138,14 +138,6 @@ public class WXController {
         //去重复
         List<String> userList = RemoveDuplicateUtil.removeDuplicate(sumList);
 
-//        for (int i=0; i<sumList.size()-0;i++){
-//            for(int j=sumList.size()-1;j>i;j--){
-//                if(sumList.get(j).equals(sumList.get(i))){
-//                    sumList.remove(j);
-//                }
-//            }
-//        }
-
         //输出sumList所有的数据
         for(String s :userList){
            System.out.println("所有可见成员："+s);

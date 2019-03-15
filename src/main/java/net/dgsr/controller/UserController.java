@@ -36,22 +36,16 @@ public class UserController {
     //测试获取request请求内的数据
     @RequestMapping("/demo")
     public Map<String,Object> string(HttpServletRequest request){
-
         Enumeration<String> enumeration = request.getParameterNames();
-
         Map<String,Object> map =new LinkedHashMap<>();
-
         while (enumeration.hasMoreElements()){
             //获取到请求对象中的参数名
             String name = enumeration.nextElement();
-
             //通过参数名拿到参数值
             String value = request.getParameter(name);
-
             //放入map
             map.put(name,value);
         }
-
         //获取到请求对象中所有的key
         for (String key : map.keySet()){
             System.out.println(key+"："+map.get(key));
