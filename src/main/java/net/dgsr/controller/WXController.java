@@ -72,6 +72,7 @@ public class WXController {
      */
     @RequestMapping("/getSoftware")
     public Object getSoftware(){
+        System.out.println("----------------------");
         String url = "https://qyapi.weixin.qq.com/cgi-bin/agent/list?access_token="+token;
         String str =  wxService.wxUser(url);
         Object object = StringTransformMapUtil.stringTransformMap(str).get("agentlist");
