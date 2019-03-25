@@ -1,0 +1,88 @@
+
+	
+	mybatis-generator使用步骤：
+		
+	    1，pom.xml ->build中加入依赖：
+		2，创建generatorConfig.xml文件
+		3，打开：http://www.mybatis.org/generator/index.html
+		4，点击 XML Configuration Reference
+		5，复制内容到generatorConfig.xml中
+		6，执行流程： 项目名右键->Run As ->Maven build ->Goals= mybatis-generator:generate ->run
+		
+		
+		项目依赖：
+			<!-- 代码生成器的插件 -->
+	        <plugin>
+	          <groupId>org.mybatis.generator</groupId>
+	          <artifactId>mybatis-generator-maven-plugin</artifactId>
+	          <version>1.3.6</version>
+	          <!-- mysql数据库的驱动包 -->
+	          <dependencies>
+	            <dependency>
+	              <groupId>mysql</groupId>
+	              <artifactId>mysql-connector-java</artifactId>
+	              <version>5.1.38</version>
+	            </dependency>
+	          </dependencies>
+	        </plugin>
+	
+		
+		
+		文本复制内容：
+			<?xml version="1.0" encoding="UTF-8"?>
+			<!DOCTYPE generatorConfiguration
+			  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+			  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+			
+			<generatorConfiguration>
+			
+			  <context id="clocking" targetRuntime="MyBatis3">
+			  
+			  	<!-- 配置数据库连接信息(&需要转义) -->
+			    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			        connectionURL="jdbc:mysql://127.0.0.1:3306/clocking?useUnicode=true&amp;characterEncoding=utf-8"
+			        userId="root"
+			        password="root">
+			    </jdbcConnection>
+			
+				<!-- 是否将小数类型强制转换为BigDecimals类型 -->
+			    <javaTypeResolver >
+			      <property name="forceBigDecimals" value="false" />
+			    </javaTypeResolver>
+			
+				<!-- 实体类的配置 -->
+				<!-- targetPackage：指定生成的包结构 -->
+				<!-- targetProject：指定生成的位置（指定的位置必须存在，如果指定为MAVEN 生成的文件会放在target目录下） -->
+			    <javaModelGenerator targetPackage="net.dgsr.model" targetProject="MAVEN">
+			      <!-- 是否允许有子包名 -->
+			      <property name="enableSubPackages" value="true" /> 
+			      
+			      <!-- 是否去空白 -->
+			      <property name="trimStrings" value="true" />		 
+			    </javaModelGenerator>
+			
+				<!-- sql映射文件的配置 -->
+			    <sqlMapGenerator targetPackage="dao"  targetProject="MAVEN">
+			      <property name="enableSubPackages" value="true" />
+			    </sqlMapGenerator>
+			
+				<!-- dao接口的配置 -->
+			    <javaClientGenerator type="XMLMAPPER" targetPackage="net.dgsr.dao"  targetProject="MAVEN">
+			      <property name="enableSubPackages" value="true" />
+			    </javaClientGenerator>
+			
+				<!-- 要生成的表的配置 -->
+				<!-- tableName：要生成的表名（%表示所有表） -->
+				<!-- enableCountByExample...：不会生成生成Examle类 -->
+			    <table  tableName="%"
+			        	enableCountByExample="false"
+				    	enableDeleteByExample="false"
+				    	enableSelectByExample="false"
+				    	enableUpdateByExample="false">
+					<property name="useActualColumnNames" value="true"/>
+					<domainObjectRenamingRule searchString="(^Au)|(^Data)" replaceString=""/>
+			    </table>
+			    
+			   </context>
+			</generatorConfiguration>
+			

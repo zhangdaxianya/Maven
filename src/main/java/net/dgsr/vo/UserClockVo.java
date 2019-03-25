@@ -2,6 +2,7 @@ package net.dgsr.vo;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
@@ -16,7 +17,7 @@ public class UserClockVo {
 
     private Integer sumCount; //次数
 
-    private String userId;  //出勤人id
+    private String userid;  //出勤人id
 
     private String salesmanName; //出勤人姓名
 

@@ -1,19 +1,52 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--映射文件的地址需和接口同名-->
+<!-- 映射文件的地址 和接口同名 -->
 <mapper namespace="net.dgsr.dao.DepartmentDao">
 
-    <!--根据公司部门信息-->
-    <select id="getDepartmentDao" resultMap="BaseResultMap" parameterType="int">
-        select * from dbo.department where parent_id=#{parentid}
-    </select>
-
-    <resultMap id="BaseResultMap" type="net.dgsr.model.Department">
-        <id property="id" javaType="int" column="id" jdbcType="BIGINT"/>
-        <result property="name" javaType="String" column="name" jdbcType="VARCHAR"/>
-        <result property="order" javaType="int" column="orderby" jdbcType="BIGINT" />
-        <result property="parentid" javaType="int" column="parent_id" jdbcType="BIGINT"/>
-    </resultMap>
-
+  <!-- 对应所有department属性 -->
+  <resultMap id="BaseResultMap" type="net.dgsr.model.Department">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="departmentName" jdbcType="VARCHAR" property="departmentname" />
+    <result column="superiorDepartmentId" jdbcType="VARCHAR" property="superiordepartmentid" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  
+  <!-- 部门表所有列 -->
+  <sql id="Base_Column_List">
+    id, departmentName, superiorDepartmentId, status
+  </sql>
+  
+  <!-- 根据条件查询部门信息 -->
+  <select id="getAllDepartment" parameterType="Department" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+     from department 
+  	   <trim prefix="where" prefixOverrides="and | or">
+  	   	  and status="1"
+  	   
+		  <if test="id != null ">
+			and id=#{id}
+		  </if>
+	   </trim>
+  </select>
+  
+  <!-- 添加部门 -->
+  <insert id="addDepartment" parameterType="Department">
+  	  insert into 
+  	  	department (departmentName, superiorDepartmentId,status)
+    	values (#{departmentname}, #{superiordepartmentid}, #{status})
+  </insert>
+  
+  <!-- 修改部门 -->
+  <update id="uploadDepartment" parameterType="Department">
+	  update department set 
+	  	departmentName = #{departmentname},superiorDepartmentId = #{superiordepartmentid}
+	  where id = #{id}
+  </update>
+  
+    <!-- 删除部门 -->
+  <update id="deleteDepartment" parameterType="int">
+	  update department set status="0" where id = #{id}
+  </update>
+  
 </mapper>

@@ -1,0 +1,127 @@
+    
+     集成swagger：
+    	 1，maven引入所需jar包
+    	 
+    	 2，自定义相关配置
+    	 
+    	 3，在applicationContext.xml文件进行配置 (忽略......)
+	 	    <!-- 引入swagger相关 -->
+		    <bean class="com.test.document.MySwaggerConfig"/>
+		    <mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/" />
+		    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/" />
+
+    	 
+    	 4，在springMVC配置文件中引入swagger相关配置包
+    	 	<bean class="springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration" id="swagger2Config"/>
+    	 
+    	 5，在controller层配置controller及方法
+    	 	@Api(value = "/wx", description = "微信")
+			@RestController
+			@RequestMapping("/wx")
+			public class WXController {
+			
+			    @Autowired
+			    private WXService wxService;
+			
+			    @ApiOperation(value = "用户登陆")
+			    @ApiImplicitParam(paramType = "query", name = "code", required = true, dataType = "String")
+			    @RequestMapping(value = "/user/login", method = {RequestMethod.GET, RequestMethod.POST})
+			    public ServerResponse login(@RequestParam String code) {
+			        return wxService.login(code);
+			    }
+    	 	
+    	 
+    	 6，配置已经完毕，启动项目，输入访问地址
+    	 	http://localhost:8080/项目名称/swagger-ui.html
+    	 	
+    	 	
+    	 	
+    	 1所需jar包：
+    	 	<!-- swagger -->
+			<dependency>
+			    <groupId>com.mangofactory</groupId>
+			    <artifactId>swagger-springmvc</artifactId>
+			    <version>1.0.2</version>
+			</dependency>
+					        
+			<dependency>   
+			    <groupId>io.springfox</groupId>   
+			    <artifactId>springfox-swagger2</artifactId>   
+			    <version>2.6.1</version>
+			</dependency>
+					        
+			<dependency>   
+				<groupId>io.springfox</groupId>   
+				<artifactId>springfox-swagger-ui</artifactId>   
+				<version>2.6.1</version>
+			</dependency>
+			  
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.7.5</version>
+			</dependency>
+			
+			
+    	 	
+    	 2自定义相关配置：
+    	 	package net.dgsr.comment;
+
+			import io.swagger.annotations.Api;
+			import io.swagger.annotations.ApiOperation;
+			import org.springframework.context.annotation.Bean;
+			import org.springframework.context.annotation.Configuration;
+			import org.springframework.web.bind.annotation.RequestMethod;
+			import springfox.documentation.builders.ApiInfoBuilder;
+			import springfox.documentation.builders.RequestHandlerSelectors;
+			import springfox.documentation.builders.ResponseMessageBuilder;
+			import springfox.documentation.schema.ModelRef;
+			import springfox.documentation.service.ApiInfo;
+			import springfox.documentation.service.Contact;
+			import springfox.documentation.service.ResponseMessage;
+			import springfox.documentation.spi.DocumentationType;
+			import springfox.documentation.spring.web.plugins.Docket;
+			import springfox.documentation.swagger2.annotations.EnableSwagger2;
+			
+			import java.util.ArrayList;
+			import java.util.List;
+			
+			
+			@Configuration
+			@EnableSwagger2
+			public class MySwaggerConfig {
+				
+				@Bean
+			    public Docket api() {
+			
+			        List<ResponseMessage> responseMessageList = new ArrayList<>();
+			        responseMessageList.add(new ResponseMessageBuilder().code(400).message("错误的请求").responseModel(new ModelRef("ApiError")).build());
+			        responseMessageList.add(new ResponseMessageBuilder().code(404).message("找不到资源").responseModel(new ModelRef("ApiError")).build());
+			        responseMessageList.add(new ResponseMessageBuilder().code(500).message("服务器内部错误").responseModel(new ModelRef("ApiError")).build());
+			        responseMessageList.add(new ResponseMessageBuilder().code(503).message("服务器暂时不可用  ").responseModel(new ModelRef("ApiError")).build());
+			
+			
+			        return new Docket(DocumentationType.SWAGGER_2)
+			                .globalResponseMessage(RequestMethod.GET, responseMessageList)
+			                .globalResponseMessage(RequestMethod.POST, responseMessageList)
+			                .apiInfo(apiInfo())
+			                .select()
+			                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
+			                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+			                .build();
+			    }
+			
+			    private ApiInfo apiInfo() {
+			
+			        return new ApiInfoBuilder()
+			                .title("项目 api接口文档") // 标题
+			                .description("") 			// 描述
+			                .contact(new Contact("张科", "", "zhangke926@163.com")) // 联系方式
+			                .version("1.0") // 版本号
+			                .build();
+			    }
+			
+			}
+    	 	
+    	 	
+    	 	

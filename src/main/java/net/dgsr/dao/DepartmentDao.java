@@ -1,12 +1,23 @@
 package net.dgsr.dao;
 
-import net.dgsr.model.Department;
-
 import java.util.List;
 
-public interface DepartmentDao {
+import net.dgsr.model.Department;
 
-    //获取组织架构
-    List<Department> getDepartmentDao(Integer parentid);
+public interface DepartmentDao {
+	
+	//获取部门信息
+	List<Department> getAllDepartment(Department department);
+	
+	//添加部门
+	int addDepartment(Department department);
+	
+	//修改部门
+	int uploadDepartment(Department department);
+	
+	//删除部门
+	int deleteDepartment(int id);
+	
+	
 
 }

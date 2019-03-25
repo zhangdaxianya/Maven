@@ -1,152 +1,189 @@
 package net.dgsr.controller;
 
-import com.alibaba.fastjson.JSON;
-import net.dgsr.service.WXService;
-import net.dgsr.util.RemoveDuplicateUtil;
-import net.dgsr.util.StringTransformMapUtil;
-import net.dgsr.util.WXUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.maven.model.IssueManagement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import com.alibaba.fastjson.JSON;
 
-@Controller
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import net.dgsr.comment.ServiceResponse;
+import net.dgsr.dao.UserinfoDao;
+import net.dgsr.model.Userinfo;
+import net.dgsr.service.WXService;
+import net.dgsr.util.Utils;
+
+@Api(value="/wx" , description="企业微信")
+@RestController
 @RequestMapping("/wx")
-@ResponseBody
 public class WXController {
-
-    @Autowired
-    private WXService wxService;
-
-    private String token = WXUtil.getToken();
-
-    private String bmidUrl="https://qyapi.weixin.qq.com/cgi-bin/user/simplelist?access_token="+token;
-
-
-    /**
-     *  从企业微信服务器处获取指定部门成员
-     * @param department_id  部门id
-     * @param fetch_child   是否递归子部门
-     * @return
-     */
-    @RequestMapping("/getWXUser")
-    @ResponseBody
-    public String getWXUser(@RequestParam(value = "department_id" )Integer department_id,
-                            @RequestParam(value = "fetch_child" , defaultValue = "0")Integer fetch_child){
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/user/simplelist?access_token="+token+"&department_id="+department_id+"&fetch_child="+fetch_child;
-        return wxService.wxUser(url);
-    };
-
-
-    /**
-     *  从企业微信处获取标签列表
-     * @return
-     */
-    @RequestMapping("/getLable")
-    @ResponseBody
-    public String getLable(){
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/tag/list?access_token="+token;
-        return wxService.wxUser(url);
-    };
-
-
-    /**
-     *  从企业微信服务器处获取指定标签成员
-     * @param tagid
-     * @return
-     */
-    @RequestMapping("/getWXLableUser")
-    @ResponseBody
-    public String getWXLableUser(@RequestParam(value = "tagid" )Integer tagid){
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/tag/get?access_token="+token+"&tagid="+tagid;
-        return wxService.wxUser(url);
-    };
-
-
-    /**
-     *  获取企业应用列表
-     * @return
-     */
-    @RequestMapping("/getSoftware")
-    public Object getSoftware(){
-        System.out.println("----------------------");
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/agent/list?access_token="+token;
-        String str =  wxService.wxUser(url);
-        Object object = StringTransformMapUtil.stringTransformMap(str).get("agentlist");
-        return object;
+	
+	
+	@Autowired
+	private WXService wxService;
+	
+	@Autowired
+	private UserinfoDao userinfoDao;
+	
+	
+	
+	@ApiOperation(value="获取企业应用列表")
+    @RequestMapping(value="/getSoftware" ,method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getSoftware() {
+    	return wxService.getSoftware();
+	}
+    
+    
+	@ApiOperation(value="获取指定应用的详情")
+	@ApiImplicitParam(paramType="query", name="agentid", value="企业应用id", required=true, dataType="int")
+    @RequestMapping(value="/getagentByid",method = {RequestMethod.GET, RequestMethod.POST})
+    public ServiceResponse<?> getagentByid(@RequestParam int agentid) {
+    	return wxService.getagentByid(agentid);
     }
+	
+	
+	@ApiOperation("从指定应用中获取可见用户")
+	@ApiImplicitParam(paramType="query", name="agentid", value="企业应用id", required=true, dataType="int")
+	@RequestMapping(value="/getUserInfo" ,method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getUserInfoByid(@RequestParam int agentid) {
+		
+		//获取应用详情
+		String data = JSON.toJSONString(wxService.getagentByid(agentid).getData());
+		
+		//将字符串转换为map
+		Map<String,Object> map = Utils.jsonToObject(data);
+		
+		//存放所有用户的userid
+		List<String> sumList = new ArrayList<String>();
+		
+		//取出可见范围人员
+		Map<String,Object> map1 = (Map<String, Object>) map.get("allow_userinfos");
+		List<Map<String, String>> list = (List<Map<String, String>>) map1.get("user");
+		for( Map<String, String> objmap:list ) {
+			sumList.add(objmap.get("userid"));
+		}
+		
+		//取出部门列表
+		Map<String,Object> map2 = (Map<String, Object>) map.get("allow_partys");
+		List<Integer> tempList = (List<Integer>)map2.get("partyid");
+		for( Integer prtid :tempList ) {
+			List<String> useridList = (List<String>) wxService.getUseridByParid(prtid, 1).getData();
+			for( String userid : useridList) {
+				sumList.add(userid);
+			}
+		}
+		
+		//取出标签列表
+		Map<String,Object> map3 = (Map<String, Object>) map.get("allow_tags");
+		List<Integer> tagList = (List<Integer>)map3.get("tagid");
+		for( Integer tagid :tagList ) {
+			List<String> useridList = (List<String>) wxService.getUseridByTagid(tagid).getData();
+			for( String userid : useridList) {
+				sumList.add(userid);
+			}
+		}
+		
+		//集合去重
+		List<String> useridList = Utils.removeDuplicate(sumList);
+		
+		return ServiceResponse.createBySuccess("查询成功", useridList);
+	}
+	
+	
+	
+	@ApiOperation("根据部门编号获取userid ")
+	@ApiImplicitParams({
+		@ApiImplicitParam(paramType="query", name="departmentid", value="部门id", required=true, dataType="int"),
+		@ApiImplicitParam(paramType="query", name="fetch_child", value="1/0：是否递归获取子部门下面的成员（默认1）", defaultValue="1", dataType="int")
+	})
+	@RequestMapping(value="/getUseridByParid",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getUseridByParid(@RequestParam int departmentid  ,@RequestParam(value="fetch_child",defaultValue="1")int fetch_child) {
+		return wxService.getUseridByParid(departmentid, fetch_child);
+	}
+	
+	
+	@ApiOperation("根据标签id获取userid ")
+	@ApiImplicitParam(paramType="query", name="tagid", value="标签id", required=true, dataType="int")
+	@RequestMapping(value="/getUseridByTagid",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getUseridByTagid(int tagid) {
+		return wxService.getUseridByTagid(tagid);
+	}
+	
 
 
-    /**
-     *  获取微信指定应用的可见范围的人员
-     * @param agentid 应用id
-     * @return
-     */
-    @RequestMapping("/getWxVisualUser")
-    public Object getWxVisualUser( Integer agentid ){
+	@ApiOperation("根据userid获取用户信息")
+	@ApiImplicitParam(paramType="query", name="userid", value="用户userid",required=true, dataType="String")
+	@RequestMapping(value="/getUserByUserid",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getUserByUserid(@RequestParam String userid) {
+		return wxService.getUserinfoByUserid(userid);
+	}
+	
+	
+	
+	@ApiOperation("将应用所有可见用户信息添加到数据库中")
+	@ApiImplicitParam(paramType="query", name="agentid", value="应用id",required=true,defaultValue="1000005", dataType="int")
+	@RequestMapping(value="/insertUserByUserid",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> insertUserByUserid(@RequestParam(value="agentid" ,defaultValue="1000005") int agentid) {
 
-        //拼接请求地址
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/agent/get?access_token="+token+"&agentid="+agentid;
+		//存放所有用户信息
+		List<Map<String,Object>> userList = new ArrayList<Map<String,Object>>();
+		
+		//获取所有的userid
+		List<String> list = (List<String>) getUserInfoByid(agentid).getData();
+		
+		//遍历userid集合
+		for( String userid : list ) {
+			
+			//判断userid在数据库中是否存在
+			if( userinfoDao.selectByUserid(userid) <= 0 ) {
+				
+				//循环userList取出所有用户信息并放入到集合中
+				userList.add((Map<String, Object>)wxService.getUserinfoByUserid(userid).getData());
+				
+				//循环存放用户信息的集合
+				for( Map<String,Object> user : userList ) {
+					
+					try {
+						//将装载用户信息的map转换为Userinfo对象
+						Userinfo userinfo = (Userinfo) Utils.mapToObject(user, Userinfo.class);
+						
+						//字段名称不一致 手动添加
+						userinfo.setQrCode(user.get("qr_code").toString()); 
+					   
+						//调用添加用户的方法
+						int rowCount = (Integer) wxService.insertUser(userinfo).getStatus();
+						
+						if( rowCount <= 0) {
+							return ServiceResponse.createByErrorMessage("添加失败！");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}	
+		}
+		return ServiceResponse.createBySuccessMessage("添加成功！");
+	}
 
-        //获取请求数据
-        String str = wxService.wxUser(url);
-
-        //将请求回来的数据转换为map
-        Map<String,Object> map = StringTransformMapUtil.stringTransformMap(str);
-
-        //先取出应用的可见范围人员
-        Map<String , Object> user = (Map<String , Object>) map.get("allow_userinfos");
-        List<Map<String, String>> list =(List<Map<String, String>>) user.get("user");
-
-        //存放可见范围的所有人员
-        List<String> sumList = new ArrayList<String>();
-
-        for (Map<String, String> item : list) {
-            sumList.add(item.get("userid"));
-        }
-
-        //取出可见部门
-        Map<String , Object> bmlist =(Map<String , Object>)map.get("allow_partys");
-        List<Integer> tempList = (List<Integer>)bmlist.get("partyid");
-
-        //根据部门id查成员
-        for (Integer item : tempList) {
-            Map<String,Object> map1 = StringTransformMapUtil.stringTransformMap(getWXUser(item,0));
-            List<Map<String, String>> list1 = (List<Map<String, String>>)map1.get("userlist");
-            for (Map<String, String> s:list1){
-                Map<String,Object> map2 =StringTransformMapUtil.stringTransformMap(JSON.toJSONString(s));
-                sumList.add(map2.get("userid").toString());
-            }
-        }
-
-        //取出可见标签
-        Map<String , Object> tagesMap =(Map<String , Object>)map.get("allow_tags");
-        List<Integer> integers = (List<Integer>)tagesMap.get("tagid");
-
-        //根据标签获取成员
-        for (Integer integers1:integers){
-            Map<String,Object> map1 = (Map<String, Object>)StringTransformMapUtil.stringTransformMap(getWXLableUser(integers1));
-            List<Map<String,String>> maps =(List<Map<String, String>>) map1.get("userlist");
-            for (Map<String, String> stringStringMap:maps){
-                Map<String,Object> map2 =StringTransformMapUtil.stringTransformMap(JSON.toJSONString(stringStringMap));
-                sumList.add(map2.get("userid").toString());
-            }
-        }
-
-        //去重复
-        List<String> userList = RemoveDuplicateUtil.removeDuplicate(sumList);
-
-        //输出sumList所有的数据
-        for(String s :userList){
-           System.out.println("所有可见成员："+s);
-        }
-        return userList;
-    }
-
-
-
+	
+	
+	@ApiOperation("获取部门列表")
+	@ApiImplicitParam(paramType="query", name="id", value="部门id，获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构",required=false, dataType="Integer")
+	@RequestMapping(value="/getdepartmentList",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getdepartmentList(@RequestParam(value="id" , required=false ) Integer id){
+		return wxService.getdepartmentList(id);
+	}
+	
 
 }

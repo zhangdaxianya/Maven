@@ -9,7 +9,7 @@ public class Constants {
     //应用的凭证密钥
     public static final String SECRET  = "4FoXgA5NMKBxhJ83N_FwWFXXOQt_n9Qv9QfY7OjFoqk";
 
-    //access_token
+    //获取token地址
     public static final String GET_TOKEN_URL = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
 
 }

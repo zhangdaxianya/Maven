@@ -1,0 +1,23 @@
+
+	lombok使用步骤：
+		
+		1，pom.xml中加入依赖：
+		2，下载lombok jar包：https://projectlombok.org/download
+		3，双击下载好的lombak.jar
+		4，关闭弹出的警告窗口，点击 Specify location..
+		5，选择eclipse的根安装目录
+		6，点击Install / Update
+		7，点击Quit Installer，完成安装
+		8，安装完成之后，请确认eclipse安装路径下是否多了一个lombok.jar包
+		9，查看配置文件eclipse.ini中是否 添加了如下内容:-javaagent:D:\build-env\eclipse\lombok.jar
+		10，重启eclipse或myeclipse
+		
+		项目依赖：
+			<dependency>
+		      <groupId>org.projectlombok</groupId>
+		      <artifactId>lombok</artifactId>
+		      <version>1.16.20</version>
+		      <scope>provided</scope>
+		    </dependency>
+		
+	备注：如过安装成功但是@Data等注解无效，可能是由于你的eclipse版本是新版本，你的lombok.jar版本太旧。那么请下载最新的lombok.jar再进行安装

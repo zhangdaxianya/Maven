@@ -6,12 +6,11 @@
 
     <!--获取指定用户在某个时间段内的外勤详情-->
     <select id="getUserClock" parameterType="net.dgsr.vo.UserClockVo" resultType="net.dgsr.vo.UserClockVo">
-        select c.salesmanName ,c.clientCode ,ci.for_short,ci.full_name,COUNT(c.clientCode) as sumCount,MAX(c.time) as maxTime
+        select c.salesmanName ,c.clientCode ,ci.full_name,COUNT(c.clientCode) as sumCount,MAX(c.time) as maxTime
           from clock c inner join client_info ci on c.clientCode = ci.code
-            where c.userId=#{userId} and c.clientCode is not null and c.clientCode !='' and c.time between #{beginTime} and #{endTime}
-              group by c.clientCode,c.salesmanName,ci.full_name,ci.for_short
-                having COUNT(c.clientCode)>0
+            where c.userId=#{userid} and c.clientCode is not null and c.clientCode !='' and c.time between #{beginTime} and #{endTime}
+              group by c.clientCode,c.salesmanName,ci.full_name
+                having COUNT(c.clientCode)
     </select>
-
 
 </mapper>

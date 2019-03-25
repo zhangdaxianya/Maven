@@ -10,6 +10,12 @@ import java.net.URL;
 
 public class HttpUtil {
 
+	
+	/**
+	 * get请求
+	 * @param url
+	 * @return
+	 */
     public static String sendGet(String url) {
 
         URL obj = null;
@@ -48,6 +54,14 @@ public class HttpUtil {
         return response.toString();
     }
 
+    
+    
+    /**
+     * post请求
+     * @param url
+     * @param param
+     * @return
+     */
     public static String sendPost(String url, String param) {
 
         URL obj = null;

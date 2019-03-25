@@ -21,8 +21,8 @@
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
                 <property name="supportedMediaTypes">
                     <list>
-                        <value>application/json ; charset=utf-8</value>
-                        <value>text/html ; charset=utf-8</value>
+                        <value>application/json;charset=utf-8</value>
+                        <value>text/html;charset=utf-8</value>
                     </list>
                 </property>
             </bean>
@@ -31,8 +31,8 @@
             <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
                 <property name="supportedMediaTypes">
                     <list>
-                        <value>application/json ; charset=utf-8</value>
-                        <value>text/html ; charset=utf-8</value>
+                        <value>application/json;charset=utf-8</value>
+                        <value>text/html;charset=utf-8</value>
                     </list>
                 </property>
                 <!-- JSON时间格式处理 -->
@@ -60,24 +60,10 @@
         <property name="maxUploadSize" value="10485760"/>
         <property name="defaultEncoding" value="utf-8" />
     </bean>
-
-    <!--6， 配置拦截器 -->
-    <!--<mvc:interceptors>-->
-        <!--<mvc:interceptor>-->
-            <!--<mvc:mapping path="/**" />-->
-
-            <!--&lt;!&ndash; 不拦截的请求 &ndash;&gt;-->
-            <!--<mvc:exclude-mapping path="/"/>-->
-            <!--<mvc:exclude-mapping path="/login"/>-->
-            <!--<mvc:exclude-mapping path="/getLoginCode"/>-->
-            <!--<mvc:exclude-mapping path="/doLogin"/>-->
-            <!--<mvc:exclude-mapping path="/static/**"/>-->
-
-            <!--&lt;!&ndash;指定拦截器&ndash;&gt;-->
-            <!--<bean class="net.dgsr.interceptor.SysInterceptor" />-->
-
-        <!--</mvc:interceptor>-->
-    <!--</mvc:interceptors>-->
+    
+    <!-- 引入swagger相关配置包  -->
+    <bean class="springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration" id="swagger2Config"/>
+    	 
 
 
 </beans>

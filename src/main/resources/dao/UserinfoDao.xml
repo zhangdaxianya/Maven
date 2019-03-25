@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 映射文件的地址 和接口同名 -->
+<mapper namespace="net.dgsr.dao.UserinfoDao">
+
+  <!-- 对应所有User属性 -->
+  <resultMap id="BaseResultMap" type="net.dgsr.model.Userinfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="VARCHAR" property="userid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="enable" jdbcType="INTEGER" property="enable" />
+    <result column="alias" jdbcType="VARCHAR" property="alias" />
+    <result column="qr_code" jdbcType="VARCHAR" property="qrCode" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+  </resultMap>
+  
+  
+  <!-- userinfo所有的列 -->
+  <sql id="Base_Column_List">
+    id, userid, name, mobile, department, position, gender, email, avatar, telephone, 
+    enable, alias, qr_code, address
+  </sql>
+  
+  
+  <!-- 根据条件查询用户信息 -->
+  <select id="selectByPrimaryKey" parameterType="Userinfo" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from userinfo
+    where id = #{id}
+  </select>
+  
+  <!-- 根据userid查询 -->
+  <select id="selectByUserid" parameterType="String" resultType="int">
+  		select count(1) from userinfo where userid=#{userid}
+  </select>
+  
+  
+  <!-- 根据条件删除用户信息 -->
+<!--   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from userinfo
+    where id = #{id,jdbcType=INTEGER}
+  </delete> -->
+  
+  
+  <!-- 添加用户 -->
+  <insert id="insert" parameterType="net.dgsr.model.Userinfo">
+    insert into userinfo (userid, name, mobile, department, position, gender, email, avatar, telephone, enable, alias, qr_code, address)
+    values (#{userid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, 
+    		#{position,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, 
+    		#{enable,jdbcType=INTEGER}, #{alias,jdbcType=VARCHAR}, #{qrCode,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR})
+  </insert>
+  
+  
+  <!-- 修改用户 -->
+<!--   <update id="updateByPrimaryKey" parameterType="net.dgsr.model.Userinfo">
+    update userinfo set 
+   	  userid = #{userid,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      department = #{department,jdbcType=VARCHAR},
+      position = #{position,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      avatar = #{avatar,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      enable = #{enable,jdbcType=INTEGER},
+      alias = #{alias,jdbcType=VARCHAR},
+      qr_code = #{qrCode,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update> -->
+  
+</mapper>
