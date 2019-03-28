@@ -6,6 +6,11 @@
 <generatorConfiguration>
 
   <context id="clocking" targetRuntime="MyBatis3">
+
+    <commentGenerator>
+      <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+      <property name="suppressAllComments" value="true" />
+    </commentGenerator>
   
   	<!-- 配置数据库连接信息(&需要转义) -->
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"

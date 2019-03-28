@@ -25,42 +25,52 @@
   
   <!-- userinfo所有的列 -->
   <sql id="Base_Column_List">
-    id, userid, name, mobile, department, position, gender, email, avatar, telephone, 
-    enable, alias, qr_code, address
+    id, userid, name, mobile, department, position, gender, email, avatar, telephone, enable, alias, qr_code, address
   </sql>
   
   
   <!-- 根据条件查询用户信息 -->
   <select id="selectByPrimaryKey" parameterType="Userinfo" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
-    from userinfo
-    where id = #{id}
+      from userinfo
+        where enable = 1
+          <!-- id -->
+          <if test="id != null "> and id=#{id} </if>
+          <!-- 职务 -->
+          <if test="position != null"> and position=#{position} </if>
+          <!-- 性别 -->
+          <if test="gender != null"> and gender=#{gender} </if>
+  </select>
+
+  <!-- 获取全部用户 -->
+  <select id="selectUser" resultMap="BaseResultMap">
+    select * from userinfo
   </select>
   
-  <!-- 根据userid查询 -->
+  <!-- 根据userid查询用户,返回数字 -->
   <select id="selectByUserid" parameterType="String" resultType="int">
-  		select count(1) from userinfo where userid=#{userid}
+    select count(1) from userinfo where userid=#{userid}
   </select>
   
   
   <!-- 根据条件删除用户信息 -->
-<!--   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from userinfo
-    where id = #{id,jdbcType=INTEGER}
-  </delete> -->
-  
-  
+      where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+
   <!-- 添加用户 -->
   <insert id="insert" parameterType="net.dgsr.model.Userinfo">
     insert into userinfo (userid, name, mobile, department, position, gender, email, avatar, telephone, enable, alias, qr_code, address)
-    values (#{userid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, 
-    		#{position,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, 
-    		#{enable,jdbcType=INTEGER}, #{alias,jdbcType=VARCHAR}, #{qrCode,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR})
+      values (#{userid}, #{name}, #{mobile}, #{department},
+              #{position}, #{gender}, #{email}, #{avatar},
+              #{telephone},#{enable}, #{alias}, #{qrCode}, #{address})
   </insert>
   
   
   <!-- 修改用户 -->
-<!--   <update id="updateByPrimaryKey" parameterType="net.dgsr.model.Userinfo">
+   <update id="updateByPrimaryKey" parameterType="net.dgsr.model.Userinfo">
     update userinfo set 
    	  userid = #{userid,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
@@ -76,6 +86,6 @@
       qr_code = #{qrCode,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
-  </update> -->
+  </update>
   
 </mapper>

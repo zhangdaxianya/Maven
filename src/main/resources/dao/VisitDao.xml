@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.dgsr.dao.VisitDao">
+
+    <resultMap id="BaseResultMap" type="net.dgsr.model.Visit">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="visit_date" jdbcType="TIMESTAMP" property="visit_date" />
+        <result column="visit_people" jdbcType="VARCHAR" property="visit_people" />
+        <result column="visit_title" jdbcType="VARCHAR" property="visit_title" />
+        <result column="visit_content" jdbcType="VARCHAR" property="visit_content" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, visit_date, visit_people, visit_title, visit_content, create_time, status
+    </sql>
+
+    <!-- 获取总数量 -->
+    <select id="total" resultType="int">
+        select count(1) from visit
+    </select>
+
+    <!-- 查询拜访记录 -->
+    <select id="selectByPrimaryKey" parameterType="net.dgsr.model.Visit" resultMap="BaseResultMap">
+        SELECT * FROM (SELECT * FROM visit
+        <trim prefix="where" prefixOverrides="and | or">
+            <!-- id -->
+            <if test="id != null "> and id=#{id} </if>
+            <!-- 拜访人 -->
+            <if test="visit_title != null"> and visit_title=#{visit_title} </if>
+            <!-- 标题 -->
+            <if test="visit_title != null"> and visit_title=#{visit_title} </if>
+            <!-- 创建时间 -->
+            <if test="create_time != null"> create_time=#{create_time} </if>
+            <!-- 状态 -->
+            <if test="status != null"> status=#{status} </if>
+        </trim>
+            ORDER BY id DESC LIMIT #{pageNum},#{pageSize}) aa ORDER BY  id DESC
+     </select>
+
+    <!-- 根据id删除拜访记录 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from visit
+            where id = #{id}
+    </delete>
+
+    <!-- 添加拜访记录 -->
+    <insert id="insert" parameterType="net.dgsr.model.Visit">
+        insert into visit ( visit_date, visit_people,visit_title, visit_content, create_time,status)
+                values (#{visit_date,jdbcType=TIMESTAMP}, #{visit_people,jdbcType=VARCHAR},
+                        #{visit_title,jdbcType=VARCHAR}, #{visit_content,jdbcType=VARCHAR},
+                        #{create_time,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 更新拜访记录 -->
+    <update id="updateByPrimaryKey" parameterType="net.dgsr.model.Visit">
+        update visit
+        set visit_date = #{visit_date},
+          visit_people = #{visit_people},
+          visit_title = #{visit_title},
+          visit_content = #{visit_content},
+          create_time = #{create_time},
+          status = #{status}
+        where id = #{id}
+    </update>
+
+</mapper>
