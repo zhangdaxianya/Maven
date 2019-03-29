@@ -33,7 +33,7 @@ public class UserClockController {
     	@ApiImplicitParam(paramType="query", name="endTime", value="结束时间", required=true, dataType="Date")
     })
     @RequestMapping(value="/userClock",method = {RequestMethod.GET, RequestMethod.POST})
-    public ServiceResponse<?> getUserClock(UserClockVo userClockVo){
+    public ServiceResponse<?> getUserClock(UserClockVo userClockVo) throws Exception{
         return userClockService.getUserClock(userClockVo);
     };
     

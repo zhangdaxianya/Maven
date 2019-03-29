@@ -31,8 +31,12 @@ public interface WXService {
 	//获取部门列表
 	ServiceResponse<?> getdepartmentList(Integer id);
 
-	
-	
+	//用户登陆
+    ServiceResponse<?> login(int code);
 
+    //获取标签列表
+	ServiceResponse<?> getTagList();
 
+	//根据id获取标签成员详情
+    ServiceResponse<?> getTagParticulars(Integer id);
 }

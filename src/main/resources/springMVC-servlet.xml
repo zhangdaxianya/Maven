@@ -64,6 +64,7 @@
     <!-- 引入swagger相关配置包  -->
     <bean class="springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration" id="swagger2Config"/>
     	 
-
+    <!-- 全局异常处理 -->
+    <bean class="net.dgsr.comment.GlobalExceptionHandler"/>
 
 </beans>

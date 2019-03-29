@@ -3,15 +3,19 @@ package net.dgsr.dao;
 import net.dgsr.model.Tag;
 
 public interface TagDao {
+
+    //删除
     int deleteByPrimaryKey(Integer tagid);
 
-    int insert(Tag record);
+    //从微信添加标签
+    int insertByWX(Tag record);
 
-    int insertSelective(Tag record);
+    //添加标签
+    int insert(String name);
 
-    Tag selectByPrimaryKey(Integer tagid);
+    //查询
+    Tag selectByPrimaryKey(Tag tag);
 
-    int updateByPrimaryKeySelective(Tag record);
-
+    //修改
     int updateByPrimaryKey(Tag record);
 }

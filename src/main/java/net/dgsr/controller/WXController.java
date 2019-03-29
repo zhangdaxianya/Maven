@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.model.IssueManagement;
+import org.apache.maven.shared.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,9 +36,15 @@ public class WXController {
 	
 	@Autowired
 	private UserinfoDao userinfoDao;
-	
-	
-	
+
+	@ApiOperation(value="用户登陆")
+	@ApiImplicitParam(paramType="query", name="code", value="code", required=true, dataType="int")
+	@RequestMapping(value="/login",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> login(@RequestParam int code) {
+		return wxService.login(code);
+	}
+
+
 	@ApiOperation(value="获取企业应用列表")
     @RequestMapping(value="/getSoftware" ,method = {RequestMethod.GET, RequestMethod.POST})
 	public ServiceResponse<?> getSoftware() {
@@ -105,10 +112,10 @@ public class WXController {
 	@ApiOperation("根据部门编号获取userid ")
 	@ApiImplicitParams({
 		@ApiImplicitParam(paramType="query", name="departmentid", value="部门id", required=true, dataType="int"),
-		@ApiImplicitParam(paramType="query", name="fetch_child", value="1/0：是否递归获取子部门下面的成员（默认1）", defaultValue="1", dataType="int")
+		@ApiImplicitParam(paramType="query", name="fetch_child", value="1/0：是否递归获取子部门下面的成员（默认0）", defaultValue="0", dataType="int")
 	})
 	@RequestMapping(value="/getUseridByParid",method = {RequestMethod.GET, RequestMethod.POST})
-	public ServiceResponse<?> getUseridByParid(@RequestParam int departmentid  ,@RequestParam(value="fetch_child",defaultValue="1")int fetch_child) {
+	public ServiceResponse<?> getUseridByParid(@RequestParam int departmentid  ,@RequestParam(value="fetch_child",defaultValue="0")int fetch_child) {
 		return wxService.getUseridByParid(departmentid, fetch_child);
 	}
 	
@@ -137,46 +144,59 @@ public class WXController {
 	public ServiceResponse<?> insertUserByUserid(@RequestParam(value="agentid" ,defaultValue="1000005") int agentid) {
 
 		//存放所有用户信息
-		List<Map<String,Object>> userList = new ArrayList<Map<String,Object>>();
+		//List<Map<String,Object>> userList = new ArrayList<Map<String,Object>>();
 		
 		//获取所有的userid
 		List<String> list = (List<String>) getUserInfoByid(agentid).getData();
-		
+		System.out.println("list集合："+list.size());
+
 		//遍历userid集合
 		for( String userid : list ) {
-			
+			System.out.println("开始添加userid为："+userid);
 			//判断userid在数据库中是否存在
-			if( userinfoDao.selectByUserid(userid) <= 0 ) {
-				
-				//循环userList取出所有用户信息并放入到集合中
-				userList.add((Map<String, Object>)wxService.getUserinfoByUserid(userid).getData());
-				
-				//循环存放用户信息的集合
-				for( Map<String,Object> user : userList ) {
-					
-					try {
-						//将装载用户信息的map转换为Userinfo对象
-						Userinfo userinfo = (Userinfo) Utils.mapToObject(user, Userinfo.class);
-						
-						//字段名称不一致 手动添加
-						userinfo.setQrCode(user.get("qr_code").toString()); 
-					   
-						//调用添加用户的方法
-						int rowCount = (Integer) wxService.insertUser(userinfo).getStatus();
-						
-						if( rowCount <= 0) {
-							return ServiceResponse.createByErrorMessage("添加失败！");
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
+			if( userinfoDao.selectByUserid(userid) > 0 ) {
+				System.out.println("重复id："+userid);
+
+			}else {
+				//取出用户信息
+				Map<String, Object> map = (Map<String, Object>) wxService.getUserinfoByUserid(userid).getData();
+
+				//处理部门(微信设置部门不合适)
+				String depart = "";
+				List<Integer> list1 = (List<Integer>) map.get("department");
+				for (Integer integer : list1) {
+					if( integer == 1){
+						break;
 					}
+					depart = integer.toString() + "/" + depart;
 				}
-			}	
+				depart = "1/"+depart;
+				String department = depart.substring(0,depart.length()-1);
+
+				try {
+					//将装载用户信息的map转换为Userinfo对象
+					Userinfo userinfo = (Userinfo) Utils.mapToObject(map, Userinfo.class);
+
+					//设置员工个人二维码
+					userinfo.setQrCode(map.get("qr_code").toString());
+
+					//设置部门
+					userinfo.setDepartment(department);
+
+					//调用添加用户的方法
+					int rowCount = (Integer) wxService.insertUser(userinfo).getStatus();
+
+					if( rowCount != 0) {
+						return ServiceResponse.createByErrorMessage("添加失败！");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return ServiceResponse.createBySuccessMessage("添加成功！");
 	}
 
-	
 	
 	@ApiOperation("获取部门列表")
 	@ApiImplicitParam(paramType="query", name="id", value="部门id，获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构",required=false, dataType="Integer")
@@ -184,6 +204,20 @@ public class WXController {
 	public ServiceResponse<?> getdepartmentList(@RequestParam(value="id" , required=false ) Integer id){
 		return wxService.getdepartmentList(id);
 	}
-	
+
+
+	@ApiOperation("获取标签列表")
+	@RequestMapping(value="/getTagList",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getTagList(){
+		return wxService.getTagList();
+	}
+
+
+	@ApiOperation("根据id获取标签成员详情")
+	@ApiImplicitParam(paramType="query", name="tagid", value="标签id" ,dataType="Integer")
+	@RequestMapping(value="/getTagParticulars",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> getTagParticulars(@RequestParam Integer id){
+		return wxService.getTagParticulars(id);
+	}
 
 }

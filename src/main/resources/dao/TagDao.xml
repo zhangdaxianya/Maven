@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.dgsr.dao.TagDao">
+
+  <resultMap id="BaseResultMap" type="net.dgsr.model.Tag">
+    <id column="tagid" jdbcType="INTEGER" property="tagid" />
+    <result column="tagname" jdbcType="VARCHAR" property="tagname" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    tagid, tagname
+  </sql>
+
+  <!-- 查询 -->
+  <select id="selectByPrimaryKey" parameterType="net.dgsr.model.Tag" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+      from tag
+        <trim prefix="where" prefixOverrides="and | or">
+          <if test="tagid != null"> and tagid = #{tagid} </if>
+          <if test="tagname != null"> and tagname = #{tagname} </if>
+        </trim>
+  </select>
+
+  <!-- 删除标签 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tag
+    where tagid = #{tagid,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="String">
+    insert into tag (tagname)
+      values (#{tagname})
+  </insert>
+
+  <!-- 从微信添加标签 -->
+  <insert id="insertByWX" parameterType="net.dgsr.model.Tag">
+    insert into tag (tagid, tagname)
+      values (#{tagid,jdbcType=INTEGER}, #{tagname,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 更新标签 -->
+  <update id="updateByPrimaryKey" parameterType="net.dgsr.model.Tag">
+    update tag
+      set tagname = #{tagname,jdbcType=VARCHAR}
+        where tagid = #{tagid,jdbcType=INTEGER}
+  </update>
+</mapper>
