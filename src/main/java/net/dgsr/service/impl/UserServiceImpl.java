@@ -106,14 +106,8 @@ public class UserServiceImpl implements UserinfoService {
 	 */
 	@Override
 	public ServiceResponse<?> selectUserByKey(Userinfo userinfo) {
-		try {
 			List<Userinfo> userinfoList = userinfoDao.selectByPrimaryKey(userinfo);
 			return ServiceResponse.createBySuccess("查询成功！",userinfoList);
-
-		}catch (Exception e){
-			e.printStackTrace();
-			return ServiceResponse.createByErrorMessage("查询失败！");
-		}
 	}
 
 

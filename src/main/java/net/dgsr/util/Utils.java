@@ -11,6 +11,16 @@ import org.apache.commons.beanutils.BeanMap;
 
 
 public class Utils {
+
+	//地球半径
+	private static double EARTH_RADIUS = 6371.393;
+
+	//获取传入值的半径
+	private static double rad(double d) {
+		return d * Math.PI / 180.0;
+	}
+
+
 	
 	/**
 	 * 将json字符串转换为map
@@ -74,6 +84,37 @@ public class Utils {
 	            return null;   
 	  
 	        return new BeanMap(obj);  
-	    }    
+	    }
+
+
+
+
+
+	/**
+	 * 根据两个经纬度计算距离
+	 * @param lat1 纬度1
+	 * @param lng1 经度1
+	 * @param lat2 纬度2
+	 * @param lng2 经度2
+	 * @return
+	 */
+	public static double GetDistance(double lat1, double lng1, double lat2, double lng2) {
+
+		//转换经纬度
+		double radLng1 = rad(lng1);
+		double radLat1 = rad(lat1);
+		double radLng2 = rad(lng2);
+		double radLat2 = rad(lat2);
+
+		//计算两个经纬度的偏差距离
+		double a = radLat1 - radLat2;
+		double b = radLng1 - radLng2;
+
+		double dis = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
+		dis = dis * EARTH_RADIUS;
+		dis = Math.round(dis * 1000);
+		return dis;
+	}
+
 
 }

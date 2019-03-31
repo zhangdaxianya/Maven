@@ -231,7 +231,7 @@ public class WXServiceImpl implements WXService {
 		//获取admin标签id
 		Tag tag = new Tag();
 		tag.setTagname("admin");
-		Integer tagid = tagDao.selectByPrimaryKey(tag).getTagid();
+		Integer tagid = tagDao.selectByPrimaryKey(tag).get(0).getTagid();
 
 		//根据标签id获取标签成员详情
 		Map<String,Object> map2 = (Map<String,Object>) getTagParticulars(tagid).getData();

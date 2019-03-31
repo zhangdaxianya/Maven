@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.dgsr.dao.ClientInfoDao">
+
+  <resultMap id="BaseResultMap" type="net.dgsr.model.ClientInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="contactTel" jdbcType="VARCHAR" property="contactTel" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="contact" jdbcType="VARCHAR" property="contact" />
+    <result column="companyTel" jdbcType="VARCHAR" property="companyTel" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="salesCode" jdbcType="VARCHAR" property="salesCode" />
+    <result column="for_short" jdbcType="VARCHAR" property="for_short" />
+    <result column="full_name" jdbcType="VARCHAR" property="full_name" />
+    <result column="legal_person" jdbcType="VARCHAR" property="legal_person" />
+    <result column="faxNumber" jdbcType="VARCHAR" property="faxNumber" />
+    <result column="scope" jdbcType="INTEGER" property="scope" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="longitude" jdbcType="REAL" property="longitude" />
+    <result column="latitude" jdbcType="REAL" property="latitude" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, contactTel, code, address, contact, companyTel, remark, salesCode, for_short, full_name, legal_person, faxNumber, scope, status, longitude, latitude
+  </sql>
+
+  <!--查询-->
+  <select id="selectByPrimaryKey" parameterType="net.dgsr.model.ClientInfo" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+      from client_info
+        <trim prefix="where" prefixOverrides="and | or">
+
+          <!--id-->
+          <if test="id!=null"> and id=#{id} </if>
+
+          <!--客户代码-->
+          <if test="code!=null"> and code=#{code} </if>
+
+          <!--业务员-->
+          <if test="salesCode!=null"> and salesCode=#{salesCode} </if>
+
+          <!--客户全称-->
+          <if test="full_name!=null"> and full_name=#{full_name} </if>
+
+          <!--法人-->
+          <if test="legal_person!=null"> and legal_person=#{legal_person} </if>
+
+          <!--客户简称-->
+          <if test="for_short!=null"> and for_short=#{for_short} </if>
+
+          <!--经度-->
+          <if test="longitude!=null"> and longitude=#{longitude} </if>
+
+          <!--纬度-->
+          <if test="latitude!=null"> and latitude=#{latitude} </if>
+        </trim>
+  </select>
+
+  <!--删除-->
+  <update id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    update client_info set status = 1 where id = #{id}
+  </update>
+
+  <!--添加-->
+  <insert id="insert" parameterType="net.dgsr.model.ClientInfo">
+    insert into client_info ( contactTel, code,
+      address, contact, companyTel, 
+      remark, salesCode, for_short, 
+      full_name, legal_person, faxNumber, 
+      scope, status,longitude, latitude)
+    values ( #{contactTel,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR},
+      #{address,jdbcType=VARCHAR}, #{contact,jdbcType=VARCHAR}, #{companyTel,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{salesCode,jdbcType=VARCHAR}, #{for_short,jdbcType=VARCHAR}, 
+      #{full_name,jdbcType=VARCHAR}, #{legal_person,jdbcType=VARCHAR}, #{faxNumber,jdbcType=VARCHAR}, 
+      #{scope,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
+      #{longitude,jdbcType=VARCHAR}, #{latitude,jdbcType=VARCHAR})
+  </insert>
+
+  <!--修改-->
+  <update id="updateByPrimaryKey" parameterType="net.dgsr.model.ClientInfo">
+    update client_info
+    set contactTel = #{contactTel,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      contact = #{contact,jdbcType=VARCHAR},
+      companyTel = #{companyTel,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      salesCode = #{salesCode,jdbcType=VARCHAR},
+      for_short = #{for_short,jdbcType=VARCHAR},
+      full_name = #{full_name,jdbcType=VARCHAR},
+      legal_person = #{legal_person,jdbcType=VARCHAR},
+      faxNumber = #{faxNumber,jdbcType=VARCHAR},
+      scope = #{scope,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      longitude = #{longitude,jdbcType=VARCHAR},
+      latitude = #{latitude,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+</mapper>

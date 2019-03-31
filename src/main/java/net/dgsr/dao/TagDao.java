@@ -2,6 +2,8 @@ package net.dgsr.dao;
 
 import net.dgsr.model.Tag;
 
+import java.util.List;
+
 public interface TagDao {
 
     //删除
@@ -14,7 +16,7 @@ public interface TagDao {
     int insert(String name);
 
     //查询
-    Tag selectByPrimaryKey(Tag tag);
+    List<Tag> selectByPrimaryKey(Tag tag);
 
     //修改
     int updateByPrimaryKey(Tag record);

@@ -13,7 +13,7 @@
 
   <!-- 查询 -->
   <select id="selectByPrimaryKey" parameterType="net.dgsr.model.Tag" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
       from tag
         <trim prefix="where" prefixOverrides="and | or">
@@ -28,6 +28,7 @@
     where tagid = #{tagid,jdbcType=INTEGER}
   </delete>
 
+  <!--添加-->
   <insert id="insert" parameterType="String">
     insert into tag (tagname)
       values (#{tagname})

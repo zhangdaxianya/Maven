@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ClientInfo {
+
     private Integer id;
 
     private String contactTel;
@@ -31,4 +32,8 @@ public class ClientInfo {
     private Integer scope;
 
     private Integer status;
+
+    private String longitude;
+
+    private String latitude;
 }

@@ -27,7 +27,7 @@ public class WXUtil {
 
     
     /**
-          *  发送请求 转换数据
+     *  发送请求 转换数据
      * @param url
      * @return
      */
@@ -35,7 +35,7 @@ public class WXUtil {
 
 		//发送请求
 		String data = HttpUtil.sendGet(url);
-		
+
 		//将结果转换为map
 		Map<String, Object> map = Utils.jsonToObject(data);
 		

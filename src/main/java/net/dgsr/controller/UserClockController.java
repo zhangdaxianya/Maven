@@ -35,7 +35,7 @@ public class UserClockController {
     @RequestMapping(value="/userClock",method = {RequestMethod.GET, RequestMethod.POST})
     public ServiceResponse<?> getUserClock(UserClockVo userClockVo) throws Exception{
         return userClockService.getUserClock(userClockVo);
-    };
+};
     
     
     

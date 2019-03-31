@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.dgsr.dao.ClockDao">
+
+  <resultMap id="BaseResultMap" type="net.dgsr.model.Clock">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="clientCode" jdbcType="VARCHAR" property="clientCode" />
+    <result column="salesmanName" jdbcType="VARCHAR" property="salesmanName" />
+    <result column="longitude" jdbcType="REAL" property="longitude" />
+    <result column="latitude" jdbcType="REAL" property="latitude" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="userId" jdbcType="VARCHAR" property="userId" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="imgpath" jdbcType="VARCHAR" property="imgpath" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, clientCode, salesmanName, longitude, latitude, time, remark, userId, department, position,imgpath
+  </sql>
+
+  <!-- 查询 -->
+  <select id="selectByPrimaryKey" parameterType="Clock" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+      from clock where 1=1
+        <!--id-->
+        <if test="id != null"> and id=#{id} </if>
+        <!--客户代码-->
+        <if test="clientCode != null"> and clientCode=#{clientCode}</if>
+        <!--业务员名称-->
+        <if test="salesmanName != null"> and salesmanName=#{salesmanName}</if>
+        <!--打卡时间-->
+        <if test="time != null"> and time=#{time}</if>
+        <!--部门-->
+        <if test="department != null"> and department=#{department}</if>
+  </select>
+
+  <!-- 删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from clock
+      where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="net.dgsr.model.Clock">
+    insert into clock
+      (clientCode, salesmanName, longitude, latitude, time, remark, userId, department, position, imgpath)
+    values ( #{clientCode,jdbcType=VARCHAR}, #{salesmanName,jdbcType=VARCHAR},
+            #{longitude,jdbcType=REAL}, #{latitude,jdbcType=REAL}, #{time,jdbcType=TIMESTAMP},
+            #{remark,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR},
+            #{position,jdbcType=VARCHAR}, #{imgpath,jdbcType=VARCHAR})
+  </insert>
+
+  <!--更新打卡记录-->
+  <update id="updateByPrimaryKey" parameterType="net.dgsr.model.Clock">
+    update clock
+      set clientCode = #{clientCode,jdbcType=VARCHAR},
+        salesmanName = #{salesmanName,jdbcType=VARCHAR},
+        longitude = #{longitude,jdbcType=REAL},
+        latitude = #{latitude,jdbcType=REAL},
+        time = #{time,jdbcType=TIMESTAMP},
+        remark = #{remark,jdbcType=VARCHAR},
+        userId = #{userId,jdbcType=VARCHAR},
+        department = #{department,jdbcType=VARCHAR},
+        position = #{position,jdbcType=VARCHAR},
+        imgpath = #{imgpath,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

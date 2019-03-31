@@ -83,22 +83,17 @@ public class VisitServiceImpl implements VisitService {
         //分页数据
         visit.setPageNum( (visit.getPageNum() - 1) * 10 );
 
-        try {
-            //获取数据
-            List<Visit> visitList = visitDao.selectByPrimaryKey(visit);
-            //获取数量
-            int total = visitDao.total();
+        //获取数据
+        List<Visit> visitList = visitDao.selectByPrimaryKey(visit);
 
-            //设值
-            dataVo.setObjectList(visitList);
-            dataVo.setTotal(total);
+        //获取数量
+        int total = visitDao.total();
 
-            return ServiceResponse.createByError("查询成功！",dataVo);
+        //设值
+        dataVo.setObjectList(visitList);
+        dataVo.setTotal(total);
 
-        }catch ( Exception e){
-            e.printStackTrace();
-            return ServiceResponse.createByErrorMessage("查询失败！");
-        }
+        return ServiceResponse.createByError("查询成功！",dataVo);
 
     }
 }

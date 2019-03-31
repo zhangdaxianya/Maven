@@ -37,10 +37,15 @@ public class TagController {
                 //将map转为对象
                 Tag tag = (Tag) Utils.mapToObject(map,Tag.class);
 
-                //判断添加状态
-                int rowCount = tagService.addTagByWX(tag);
-                if ( rowCount <= 0 ){
-                    return ServiceResponse.createBySuccessMessage("添加失败！");
+                //判断此标签是否已存在
+                if ( tagService.selectTag(tag).getStatus() == 0 ){
+                    System.out.println("标签名为："+tag.getTagname()+"的标签已存在！");
+                }else {
+                    //判断添加状态
+                    int rowCount = tagService.addTagByWX(tag);
+                    if ( rowCount <= 0 ){
+                        return ServiceResponse.createBySuccessMessage("添加失败！");
+                    }
                 }
             }catch ( Exception e){
                 //手动回滚
@@ -65,5 +70,19 @@ public class TagController {
         return tagService.selectTag( tag );
     }
 
+
+    @ApiOperation("更新标签")
+    @RequestMapping(value="/updateTag",method = {RequestMethod.GET, RequestMethod.POST})
+    public ServiceResponse<?> updateTag(@ModelAttribute Tag tag){
+        return tagService.updateTag( tag );
+    }
+
+
+    @ApiOperation("删除标签")
+    @ApiImplicitParam(paramType="query", name="tagid", value="标签id", dataType="int")
+    @RequestMapping(value="/deleteTag",method = {RequestMethod.GET, RequestMethod.POST})
+    public ServiceResponse<?> deleteTag(@RequestParam int tagid){
+        return tagService.deleteTag( tagid );
+    }
 
 }

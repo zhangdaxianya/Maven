@@ -13,4 +13,10 @@ public interface TagService {
 
     //查询标签
     ServiceResponse<?> selectTag(Tag tag);
+
+    //更新标签
+   ServiceResponse<?> updateTag(Tag tag);
+
+   //删除标签
+   ServiceResponse<?> deleteTag(int tagid);
 }

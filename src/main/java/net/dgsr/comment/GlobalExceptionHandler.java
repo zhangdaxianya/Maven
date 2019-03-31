@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         System.out.println("全局异常捕获统计");
         e.printStackTrace();
         map.put("status",ResponseCode.ERROR.getCode());
-        map.put("msg","接口异常，请查看服务端日志，错了心里没点B数吗？");
+        map.put("msg","接口异常，请查看服务端日志，那错了心里没点B数吗？");
         map.put("data",e.toString());
         return map;
     }

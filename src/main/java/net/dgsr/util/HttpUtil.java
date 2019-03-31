@@ -17,36 +17,27 @@ public class HttpUtil {
 	 * @return
 	 */
     public static String sendGet(String url) {
-
         URL obj = null;
         HttpURLConnection con = null;
         BufferedReader in = null;
         StringBuffer response = null;
         try {
             obj = new URL(url);
-
             con = (HttpURLConnection) obj.openConnection();
-
             // 默认值
             con.setRequestMethod("GET");
-
             in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-
             response = new StringBuffer();
-
             String inputLine;
-
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             try {
                 in.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
