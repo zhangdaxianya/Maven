@@ -93,7 +93,7 @@ public class ClockServiceImpl implements ClockService {
      * @return
      */
     @Override
-    public ServiceResponse<?> getDistance(double lat, double lon, String code) {
+    public ServiceResponse<?> getDistance(double lat, double lng, String code) {
 
         TotalAndDataVo totalAndDataVo = new TotalAndDataVo();
 
@@ -103,39 +103,22 @@ public class ClockServiceImpl implements ClockService {
         //获取客户信息
         ClientInfo clientInfo1 = clientInfoDao.selectByPrimaryKey(clientInfo).get(0);
 
-        if ( clientInfo == null ){
-            return ServiceResponse.createByErrorMessage("客户不存在！");
-        }
-
         //距离
         double scope = 0.0;
 
-        //存放附近的客户
-        List<ClientInfo> clientInfos = new ArrayList<>();
-
         //根据经纬度计算距离
-        scope = Utils.GetDistance(lon,lat,Double.parseDouble(clientInfo1.getLongitude()),Double.parseDouble(clientInfo1.getLatitude()));
+        scope = Utils.GetDistance(lng,lat,Double.parseDouble(clientInfo1.getLongitude()),Double.parseDouble(clientInfo1.getLatitude()));
 
         //Total = 1 表示在范围内
-        if( scope <= 500 ){
+        if( scope <= 2000 ){
             totalAndDataVo.setTotal(1);
         }else {
             totalAndDataVo.setTotal(0);
         }
 
-        //获取所有客户的经纬度
-        List<ClientInfo> list = clientInfoDao.selectByPrimaryKey(clientInfo);
+        List<ClientInfo> data = (List<ClientInfo>) getClientList(500,lat,lng).getData();
 
-        for (ClientInfo info : list) {
-
-            //根据经纬度计算距离
-            scope = Utils.GetDistance(lon,lat,Double.parseDouble(info.getLongitude()),Double.parseDouble(info.getLatitude()));
-            if( scope <= 2000 ){
-                clientInfos.add(info);
-            }
-        }
-
-        totalAndDataVo.setObjectList(clientInfos);
+        totalAndDataVo.setObjectList(data);
 
         return ServiceResponse.createBySuccess("查询成功！",totalAndDataVo);
     }
@@ -150,7 +133,30 @@ public class ClockServiceImpl implements ClockService {
      */
     @Override
     public ServiceResponse<?> getClientList(int dis, double lat, double lon) {
-        return null;
+
+        ClientInfo clientInfo = null;
+
+        //存放符合距离的客户
+        List<ClientInfo> clientInfos = new ArrayList<>();
+
+        //获取所有客户的经纬度
+        List<ClientInfo> list = clientInfoDao.selectByPrimaryKey(clientInfo);
+
+        //距离
+        double scope = 0.0;
+
+        //遍历客户集合
+        for (ClientInfo info : list) {
+            if ( info.getLongitude() == null || info.getLatitude() == null ){
+                continue;
+            }
+            //根据经纬度计算距离
+            scope = Utils.GetDistance(lon,lat,Double.parseDouble(info.getLongitude()),Double.parseDouble(info.getLatitude()));
+            if( scope <= 500 ){
+                clientInfos.add(info);  //添加符合条件的客户
+            }
+        }
+        return ServiceResponse.createBySuccess("查询成功！",clientInfos);
     }
 
 

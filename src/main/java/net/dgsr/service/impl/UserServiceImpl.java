@@ -1,5 +1,7 @@
 package net.dgsr.service.impl;
 
+import net.dgsr.dao.ClientInfoDao;
+import net.dgsr.model.ClientInfo;
 import org.apache.maven.shared.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,14 @@ import java.util.List;
 
 
 @Service
-public class UserServiceImpl implements UserinfoService {
+public class UserServiceImpl implements UserinfoService
+{
 
 	@Autowired
 	private UserinfoDao userinfoDao;
+
+	@Autowired
+	private ClientInfoDao clientInfoDao;
 	
 	
 	/**
@@ -123,6 +129,20 @@ public class UserServiceImpl implements UserinfoService {
 			return ServiceResponse.createBySuccessMessage("更新成功！");
 		}
 		return ServiceResponse.createByErrorMessage("更新失败！");
+	}
+
+
+	/**
+	 * 根据userid查询所有客户
+	 * @param userid
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> selectClientinfoByUserid(String userid) {
+		ClientInfo clientInfo = new ClientInfo();
+		clientInfo.setSalesCode(userid);
+		List<ClientInfo> infos = clientInfoDao.selectByPrimaryKey(clientInfo);
+		return ServiceResponse.createByError("查询成功！",infos);
 	}
 
 }

@@ -56,4 +56,12 @@ public class UserinfoController {
 	}
 
 
+	@ApiOperation("根据userid查询所有客户")
+	@ApiImplicitParam( paramType="query", name="userid", value="userid", required=true, dataType="String" )
+	@RequestMapping(value="/selectClientinfoByUserid" ,method={RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> selectClientinfoByUserid(String userid) {
+		return userService.selectClientinfoByUserid(userid);
+	}
+
+
 }

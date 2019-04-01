@@ -19,4 +19,7 @@ public interface UserinfoService {
 
     //更新用户
     ServiceResponse<?> updateUserByKey(Userinfo userinfo);
+
+    //根据userid查询所有客户
+    ServiceResponse<?> selectClientinfoByUserid(String userid);
 }
