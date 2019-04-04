@@ -81,7 +81,15 @@ public class VisitServiceImpl implements VisitService {
         TotalAndDataVo dataVo = new TotalAndDataVo();
 
         //分页数据
-        visit.setPageNum( (visit.getPageNum() - 1) * 10 );
+        if( visit.getPageNum() == null){
+            visit.setPageNum(0);
+        }else {
+            visit.setPageNum( (visit.getPageNum() - 1) * 10 );
+        }
+
+        if ( visit.getPageSize() == null ){
+            visit.setPageSize(10);
+        }
 
         //获取数据
         List<Visit> visitList = visitDao.selectByPrimaryKey(visit);

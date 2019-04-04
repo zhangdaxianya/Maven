@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.dgsr.dao.NoticeDao">
+
+  <resultMap id="BaseResultMap" type="net.dgsr.model.Notice">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="msgContent" jdbcType="VARCHAR" property="msgContent" />
+    <result column="msgObjType" jdbcType="INTEGER" property="msgObjType" />
+    <result column="msgObj" jdbcType="VARCHAR" property="msgObj" />
+    <result column="sender" jdbcType="VARCHAR" property="sender" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="timingSendTime" jdbcType="TIMESTAMP" property="timingSendTime" />
+    <result column="sendTime" jdbcType="TIMESTAMP" property="sendTime" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="identifying" jdbcType="VARCHAR" property="identifying" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, title, msgContent, msgObjType, msgObj, sender, status, timingSendTime, sendTime, name, identifying, description
+  </sql>
+
+  <!--查询-->
+  <select id="selectByPrimaryKey" parameterType="net.dgsr.model.Notice" resultMap="BaseResultMap">
+    SELECT * FROM (SELECT * FROM notice
+        <trim prefix="where" prefixOverrides="and | or">
+          <if test="id != null"> and id=#{id} </if>
+          <if test="msgObjType != null"> and msgObjType=#{msgObjType} </if>
+          <if test="msgObj != null"> and msgObj=#{msgObj} </if>
+          <if test="sender != null"> and sender=#{sender} </if>
+          <if test="status != null"> and status=#{status} </if>
+          <if test="sendTime != null"> and sendTime=#{sendTime} </if>
+        </trim>
+          ORDER BY id DESC LIMIT #{pageNum},#{pageSize}) aa ORDER BY  id DESC
+  </select>
+
+  <!--删除-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from notice
+      where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <!--添加-->
+  <insert id="insert" parameterType="net.dgsr.model.Notice">
+    insert into notice ( title, msgContent, msgObjType, msgObj, sender, status, timingSendTime, sendTime, name, identifying, description )
+                values ( #{title}, #{msgContent}, #{msgObjType}, #{msgObj}, #{sender}, #{status}, #{timingSendTime}, #{sendTime}, #{name}, #{identifying}, #{description} )
+  </insert>
+
+  <!--修改-->
+  <update id="updateByPrimaryKey" parameterType="net.dgsr.model.Notice">
+    update notice
+      set title = #{title}, msgContent = #{msgContent}, msgObjType = #{msgObjType},
+        msgObj = #{msgObj}, sender = #{sender}, status = #{status}, timingSendTime = #{timingSendTime},
+        sendTime = #{sendTime}, name = #{name}, identifying = #{identifying}, description = #{description}
+      where id = #{id}
+  </update>
+
+
+</mapper>

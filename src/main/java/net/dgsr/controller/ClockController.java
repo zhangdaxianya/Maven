@@ -89,4 +89,18 @@ public class ClockController {
     }
 
 
+    @ApiOperation(value = "根据经纬度获取地址信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", name = "dis", value = "距离", required = true, dataType = "int"),
+            @ApiImplicitParam(paramType = "query", name = "lat", value = "纬度", required = true, dataType = "double"),
+            @ApiImplicitParam(paramType = "query", name = "lng", value = "经度", required = true, dataType = "double")
+    })
+    @RequestMapping(value = "/getArrdessByLatAndLng", method = {RequestMethod.GET, RequestMethod.POST})
+    public ServiceResponse<?> getArrdessByLatAndLng(@RequestParam int dis,
+                                                    @RequestParam double lat,
+                                                    @RequestParam double lng ) {
+        return clockService.getArrdessByLatAndLng(dis, lat, lng);
+    }
+
+
 }

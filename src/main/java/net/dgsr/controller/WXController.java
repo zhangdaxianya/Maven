@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.dgsr.model.Department;
+import net.dgsr.model.Tag;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.shared.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.fastjson.JSON;
 
@@ -24,6 +23,9 @@ import net.dgsr.dao.UserinfoDao;
 import net.dgsr.model.Userinfo;
 import net.dgsr.service.WXService;
 import net.dgsr.util.Utils;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Api(value="/wx" , description="企业微信")
 @RestController
@@ -43,6 +45,7 @@ public class WXController {
 	public ServiceResponse<?> login(@RequestParam int code) {
 		return wxService.login(code);
 	}
+
 
 
 	@ApiOperation(value="获取企业应用列表")
@@ -219,5 +222,102 @@ public class WXController {
 	public ServiceResponse<?> getTagParticulars(@RequestParam Integer id){
 		return wxService.getTagParticulars(id);
 	}
+
+
+	@ApiOperation("添加用户")
+	@RequestMapping(value="/addUser",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> addUser(@ModelAttribute Userinfo userinfo )
+	{
+		return wxService.addUser(userinfo);
+	}
+
+
+	@ApiOperation("更新用户")
+	@RequestMapping(value="/updateUser",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> updateUser(@ModelAttribute Userinfo userinfo ){
+
+		return wxService.updateUser(userinfo);
+	}
+
+
+	@ApiOperation("删除用户")
+	@ApiImplicitParam(paramType="query", name="userid", value="userid" ,dataType="String")
+	@RequestMapping(value="/deliteUser",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> deliteUser(@RequestParam String userid){
+
+		return wxService.deliteUser(userid);
+	}
+
+
+	@ApiOperation("添加部门")
+	@RequestMapping(value="/addDepartment",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> addDepartment(@ModelAttribute Department department ){
+		return wxService.addDepartment(department);
+	}
+
+
+	@ApiOperation("更新部门")
+	@RequestMapping(value="/updateDepartment",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> updateDepartment(@ModelAttribute Department department ){
+		return wxService.updateDepartment(department);
+	}
+
+
+	@ApiOperation("删除部门")
+	@ApiImplicitParam(paramType="query", name="id", value="部门id（注：不能删除根部门；不能删除含有子部门、成员的部门）" ,dataType="Integer")
+	@RequestMapping(value="/deliteDepartment",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> deliteDepartment(@RequestParam Integer id){
+
+		return wxService.deliteDepartment(id);
+	}
+
+
+	@ApiOperation("添加标签")
+	@RequestMapping(value="/addTag",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> addTag(@ModelAttribute Tag tag ){
+
+		return wxService.addTag(tag);
+	}
+
+
+	@ApiOperation("更新标签")
+	@RequestMapping(value="/updateTag",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> updateTag(@ModelAttribute Tag tag  ){
+		return wxService.updateTag(tag);
+	}
+
+
+	@ApiOperation("删除标签")
+	@ApiImplicitParam(paramType="query", name="tagid", value="标签id" ,dataType="Integer")
+	@RequestMapping(value="/deliteTag",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> deliteTag(@RequestParam Integer tagid){
+
+		return wxService.deliteTag(tagid);
+	}
+
+
+
+	@ApiOperation("上传临时素材到微信")
+	@RequestMapping(value="/uploadTempFile",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> uploadTempFile(@RequestParam(value = "file", required = false) MultipartFile file,
+										 	  @RequestParam String type) {
+
+		return wxService.uploadTempFile(file, type);
+	}
+
+
+	@ApiOperation("获取临时素材")
+	@RequestMapping(value="/downloadTempFile",method = {RequestMethod.GET, RequestMethod.POST})
+	public ServiceResponse<?> downloadTempFile(@RequestParam String mediaId,
+											   @RequestParam String userid,
+										       HttpServletRequest request) {
+		return wxService.downloadTempFile(mediaId, userid, request);
+	}
+
+
+
+
+
+
 
 }

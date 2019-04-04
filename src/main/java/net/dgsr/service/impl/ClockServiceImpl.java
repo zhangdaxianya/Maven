@@ -243,4 +243,26 @@ public class ClockServiceImpl implements ClockService {
     }
 
 
+    /**
+     * 根据经纬度获取地址信息
+     * @param dis
+     * @param lat
+     * @param lng
+     * @return
+     */
+    @Override
+    public ServiceResponse<?> getArrdessByLatAndLng( int dis, double lat, double lng ) {
+
+        //发送请求 获取map数据
+        Map<String,Object> map = LngAadLatUtil.getArrdess(dis,lat,lng);
+
+        //判断请求状态
+        if ( !StringUtils.equals( map.get("status").toString() , "0") ){
+            return ServiceResponse.createByError("查询失败！",map);
+        }
+
+        return ServiceResponse.createBySuccess("查询成功！",map.get("result"));
+    }
+
+
 }

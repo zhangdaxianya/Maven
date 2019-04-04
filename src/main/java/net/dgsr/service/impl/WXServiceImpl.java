@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import net.dgsr.dao.TagDao;
+import net.dgsr.model.Department;
 import net.dgsr.model.Tag;
+import net.dgsr.util.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,11 @@ import net.dgsr.service.WXService;
 import net.dgsr.util.HttpUtil;
 import net.dgsr.util.Utils;
 import net.dgsr.util.WXUtil;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class WXServiceImpl implements WXService {
@@ -28,9 +35,15 @@ public class WXServiceImpl implements WXService {
 
 	@Autowired
 	private TagDao tagDao;
-	
-	//token
+
+	//sr
 	String token = WXUtil.getToken();
+
+	//sy
+	String tokenSY = WXUtil.getTokenSY();
+
+	//sy_TXL
+	String tokenSY_TXL = WXUtil.getTokenTXL();
 
 	
 	/**
@@ -190,7 +203,7 @@ public class WXServiceImpl implements WXService {
 		
 		//拼接请求地址
 		String url = "https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token="+token+"";
-		
+//		String url = "https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token="+tokenSY+"";
 		//拼接部门
 		if( id != null) {
 			url = url + "&id=" + id;
@@ -316,6 +329,224 @@ public class WXServiceImpl implements WXService {
 		}
 
 		return ServiceResponse.createBySuccess("查询成功！",map );
+	}
+
+
+	/**
+	 * 添加用户
+	 * @param userinfo
+	 * @return
+	 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public ServiceResponse<?> addUser(Userinfo userinfo) {
+
+		//同步添加到数据库中
+		int rowCount = userinfoDao.insert(userinfo);
+		if ( rowCount > 0 ){
+
+			//将用户对象转换位JSON字符串
+			String jsonStr = JSON.toJSONString(userinfo);
+
+			//拼接请求地址，通讯录token（胜源）
+//			String url = "https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token="+tokenSY_TXL;
+			String url = "https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token="+token;
+
+			//发送POST请求
+			String data = HttpUtil.sendPost(url,jsonStr);
+
+			//将data数据转换位map
+			Map<String , Object> map = Utils.jsonToObject(data);
+
+			//判断请求状态
+			if ( !StringUtils.equals(map.get("errcode").toString(),"0") ){
+
+				//手动回滚
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+				return ServiceResponse.createByError("添加失败！",map);
+			}
+		}
+		return  ServiceResponse.createBySuccessMessage("添加成功！");
+	}
+
+	/**
+	 * 更新用户
+	 * @param userinfo
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> updateUser(Userinfo userinfo) {
+
+		//同步更新到数据库中
+		int rowCount = userinfoDao.updateByPrimaryKey(userinfo);
+		if ( rowCount > 0 ){
+
+			//将用户对象转换位JSON字符串
+			String jsonStr = JSON.toJSONString(userinfo);
+
+			//拼接请求地址，通讯录token（胜源）
+			String url = "https://qyapi.weixin.qq.com/cgi-bin/user/update?access_token="+token;
+
+			//发送POST请求
+			String data = HttpUtil.sendPost(url,jsonStr);
+
+			//将data数据转换位map
+			Map<String , Object> map = Utils.jsonToObject(data);
+
+			//判断请求状态
+			if ( !StringUtils.equals(map.get("errcode").toString(),"0") ){
+
+				//手动回滚
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+				return ServiceResponse.createByError("更新失败！",map);
+			}
+		}
+		return  ServiceResponse.createBySuccessMessage("更新成功！");
+	}
+
+
+	/**
+	 * 删除用户
+	 * @param userid
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> deliteUser(String userid) {
+
+		//同步删除数据库中的用户
+		int rowCount = userinfoDao.deleteByUserid(userid);
+		if ( rowCount > 0 ){
+
+			//拼接请求地址，通讯录token（胜源）
+			String url = "https://qyapi.weixin.qq.com/cgi-bin/user/update?access_token="+token+"&userid="+userid;
+
+			// 发送请求，将data数据转换位map
+			Map<String , Object> map = WXUtil.sendAndTransform(url);
+
+			//判断请求状态
+			if ( !StringUtils.equals(map.get("errcode").toString(),"0") ){
+
+				//手动回滚
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+				return ServiceResponse.createByError("删除失败！",map);
+			}
+		}
+		return  ServiceResponse.createBySuccessMessage("删除成功！");
+	}
+
+
+	/**
+	 * 添加部门
+	 * @param department
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> addDepartment(Department department) {
+		return null;
+	}
+
+
+	/**
+	 * 更新部门
+	 * @param department
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> updateDepartment(Department department) {
+		return null;
+	}
+
+
+	/**
+	 * 删除部门
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> deliteDepartment(Integer id) {
+		return null;
+	}
+
+
+	/**
+	 * 添加标签
+	 * @param tag
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> addTag(Tag tag) {
+		return null;
+	}
+
+
+	/**
+	 * 更新标签
+	 * @param tag
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> updateTag(Tag tag) {
+		return null;
+	}
+
+
+	/**
+	 * 删除标签
+	 * @param tagid
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> deliteTag(Integer tagid) {
+		return null;
+	}
+
+
+	/**
+	 * 上传临时素材到微信
+	 * @param file
+	 * @param type
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> uploadTempFile(MultipartFile file, String type) {
+
+		//拼接请求地址
+		String url = "https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token="+token+"&type="+type;
+
+		//发送上传临时素材的请求  返回一个map
+		Map<String,Object> map = Utils.jsonToObject(FileUtil.uploadWxTempFile(url,file));
+
+		//判断请求状态
+		if( !StringUtils.equals( map.get("errcode").toString(),"0")){
+			return ServiceResponse.createByError("上传失败！",map);
+		}
+
+		// media_id = 媒体文件上传后获取的唯一标识，3天内有效
+		return ServiceResponse.createBySuccess("上传成功！",map.get("media_id"));
+	}
+
+
+	/**
+	 * 获取临时素材
+	 * @param mediaId
+	 * @param userid
+	 * @param request
+	 * @return
+	 */
+	@Override
+	public ServiceResponse<?> downloadTempFile(String mediaId, String userid, HttpServletRequest request) {
+
+		//拼接请求地址
+		String url = "https://qyapi.weixin.qq.com/cgi-bin/media/get?access_token="+token+"&media_id="+mediaId;
+
+		//获取保存文件的路径 (目录的根目录的绝对路径。)
+		String filePath = request.getServletContext().getRealPath("upload/clocking/" + userid + "/");
+
+		//返回文件的存放位置
+		return FileUtil.downloadTempFileByMediaId(url,filePath,mediaId);
 	}
 
 

@@ -26,10 +26,13 @@ public interface ClockService {
     //根据经纬度和范围返回满足条件的客户列表
     ServiceResponse<?> getClientList(int dis, double lat, double lon);
 
-    //根据地址获取经纬度
+    //根据地址获取经纬度,
     ServiceResponse<?> getLngAadLatUtil(String address) throws UnsupportedEncodingException;
 
     //更新数据库客户的经纬度
     ServiceResponse<?> getLngAadLatUtil2() throws UnsupportedEncodingException;
+
+    //根据经纬度获取地址信息
+    ServiceResponse<?> getArrdessByLatAndLng(int dis, double lat, double lng);
 
 }

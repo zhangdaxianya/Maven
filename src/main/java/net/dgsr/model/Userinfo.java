@@ -7,14 +7,14 @@ import lombok.Data;
 @ApiModel(value="用户对象")
 @Data
 public class Userinfo {
-	
-	@ApiModelProperty(name="id" ,value="主键")
+
+    //主键
     private Integer id;
-    
-	@ApiModelProperty(name="userid" ,value="用户id")
+
+    //userid
     private String userid;
-    
-	@ApiModelProperty(name="name" ,value="用户名")
+
+    //用户名
     private String name;
     
     //电话

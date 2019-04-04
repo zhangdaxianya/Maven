@@ -34,9 +34,9 @@ public class Visit {
     private Integer status;
 
     @ApiModelProperty(hidden = true , value = "页码")
-    private  Integer pageNum = 1;
+    private  Integer pageNum;
 
     @ApiModelProperty(hidden = true , value = "每页数量")
-    private  Integer pageSize = 10;
+    private  Integer pageSize;
 
 }
