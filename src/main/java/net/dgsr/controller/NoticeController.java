@@ -35,8 +35,6 @@ public class NoticeController {
     }
 
 
-
-
     @ApiOperation("查询消息")
     @RequestMapping(value = "/selectNotice" ,method = {RequestMethod.GET ,RequestMethod.POST})
     public ServiceResponse<?> selectNotice(@ModelAttribute Notice notice){
